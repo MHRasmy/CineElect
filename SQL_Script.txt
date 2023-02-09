@@ -1,0 +1,136 @@
+create table voter (voter_id number(5) primary key , first_name varchar2(25) , last_name varchar2(25)) ;
+create table movie (movie_name varchar2(25) primary key , num_of_votes number(3)) ;
+create table movie_genre(movie_name varchar2(25) not null , moviegenre varchar2(10) not null) ;
+create table prize_elections(prize_name varchar2(25) primary key , start_date date , end_date date , winner_name varchar2(25));
+create table organizer(admin_id number(2) primary key , email varchar2(20) , name varchar2(25) , gender varchar2(10)); 
+create table votes_for(voter_id number(5) , movie_name varchar2(25) , prize_name varchar2(15)) ;
+create table nominated_for(movie_name varchar2(25) , prize_name varchar2(15)) ;
+create table manages(admin_id number(2) , prize_name varchar2(15) , movie_name varchar2(25));
+
+ 
+alter table movie_genre 
+add foreign key(movie_name) 
+REFERENCES movie(movie_name)  
+
+add primary key(movie_name , moviegenre) ;
+
+
+alter table prize_elections
+add foreign key(winner_name) 
+REFERENCES movie(movie_name); 
+
+
+alter table votes_for 
+add foreign key(voter_id) 
+REFERENCES voter(voter_id)
+
+add foreign key(movie_name) 
+REFERENCES movie (movie_name)
+
+add foreign key(prize_name) 
+REFERENCES prize_elections(prize_name); 
+
+
+alter table nominated_for 
+add foreign key(movie_name) 
+REFERENCES movie (movie_name)
+
+add foreign key(prize_name) 
+REFERENCES prize_elections(prize_name);
+
+
+alter table manages 
+add foreign key(movie_name) 
+REFERENCES movie (movie_name)
+
+add foreign key(prize_name) 
+REFERENCES prize_elections(prize_name)
+
+add foreign key(admin_id) 
+REFERENCES organizer(admin_id);
+
+  
+insert into voter(voter_id , first_name , last_name) values(12340 , 'Mohamed' , 'riad') ;
+insert into voter(voter_id , first_name , last_name) values(12341 , 'Mohamed' , 'ahmed') ;
+insert into voter(voter_id , first_name , last_name) values(12342 , 'Mohamed' , 'bahaa');
+insert into voter(voter_id , first_name , last_name) values(12343 , 'Mohamed' , 'barakat');
+insert into voter(voter_id , first_name , last_name) values(12344 , 'Mohamed' , 'salama');
+
+insert into movie(movie_name , num_of_votes)  values('interstellar' , 1) ;
+insert into movie(movie_name , num_of_votes)  values('the joker' , 2) ;
+insert into movie(movie_name , num_of_votes)  values('inception' , 3) ;
+insert into movie(movie_name , num_of_votes)  values('avengers infinity war' , 4) ;
+insert into movie(movie_name , num_of_votes)  values('the fault in our stars' , 5)  ;
+insert into movie(movie_name , num_of_votes)  values('mission impossible' , 0) ;
+insert into movie(movie_name , num_of_votes)  values('the notebook' , 2);
+insert into movie(movie_name , num_of_votes)  values('barbie' , 3); 
+
+
+insert into movie_genre(movie_name , moviegenre) values('interstellar' , 'sci-fi') ;
+insert into movie_genre(movie_name , moviegenre) values('the joker' , 'drama') ;
+insert into movie_genre(movie_name , moviegenre) values('inception' , 'sci-fi') ;
+insert into movie_genre(movie_name , moviegenre) values('avengers infinity war' , 'action') ;
+insert into movie_genre(movie_name , moviegenre) values('the fault in our stars' , 'romance');
+insert into movie_genre(movie_name , moviegenre) values('mission impossible' , 'action');
+insert into movie_genre(movie_name , moviegenre) values('the notebook' , 'romance') ;
+insert into movie_genre(movie_name , moviegenre) values('barbie' , 'drama') ;
+
+insert into prize_elections(prize_name , winner_name) 
+values('Oscar' , null) ; 
+
+insert into organizer(admin_id , email , name , gender) values(1 , 'mahmoud@gmail.com' , 'mahmoud' , 'male') ;
+insert into organizer(admin_id , email , name , gender) values(2 , 'kareem@gmail.com' , 'Kareem' , 'male') ;
+insert into organizer(admin_id , email , name , gender) values(3 , 'mohamed@gmail.com' , 'Mohamed' , 'male') ;
+insert into organizer(admin_id , email , name , gender) values(4 , 'rasmy@gmail.com' , 'Rasmy' , 'male') ;
+insert into organizer(admin_id , email , name , gender) values(5 , 'mostafa@gmail.com' , 'Mostafa' , 'male');  
+insert into organizer(admin_id , email , name , gender) values(6 , 'ammar@gmail.com' , 'Ammar' , 'male');
+insert into organizer(admin_id , email , name , gender) values(7 , 'amr@gmail.com' , 'Amr' , 'male');
+ 
+insert into votes_for(voter_id , movie_name , prize_name) values(12340 , 'interstellar' , 'Oscar') ;
+insert into votes_for(voter_id , movie_name , prize_name) values(12341 , 'the joker' , 'Oscar') ;
+insert into votes_for(voter_id , movie_name , prize_name) values(12342 , 'avengers infinity war' , 'Oscar') ; 
+insert into votes_for(voter_id , movie_name , prize_name) values(12343 , 'the fault in our stars' , 'Oscar') ;
+insert into votes_for(voter_id , movie_name , prize_name) values(12344 , 'inception' , 'Oscar') ;
+insert into votes_for(voter_id , movie_name , prize_name) values(12340 , 'inception' , 'Oscar') ;
+insert into votes_for(voter_id , movie_name , prize_name) values(12341 , 'the fault in our stars' , 'Oscar') ;
+insert into votes_for(voter_id , movie_name , prize_name) values(12342 , 'avengers infinity war' , 'Oscar') ;
+insert into votes_for(voter_id , movie_name , prize_name) values(12343 , 'the joker' , 'Oscar') ;
+insert into votes_for(voter_id , movie_name , prize_name) values(12344 , 'interstellar' , 'Oscar') ;
+
+
+
+
+ 
+insert into nominated_for(movie_name , prize_name)  values('interstellar' , 'Oscar') ;
+insert into nominated_for(movie_name , prize_name)  values('the joker' , 'Oscar') ;
+insert into nominated_for(movie_name , prize_name)  values('inception' , 'Oscar') ;
+insert into nominated_for(movie_name , prize_name)  values('avengers infinity war' , 'Oscar') ;
+insert into nominated_for(movie_name , prize_name)  values('the fault in our stars' , 'Oscar');
+insert into nominated_for(movie_name , prize_name)  values('mission impossible' , 'Oscar');
+insert into nominated_for(movie_name , prize_name)  values('the notebook' , 'Oscar') ;
+insert into nominated_for(movie_name , prize_name)  values('barbie' , 'Oscar');
+
+
+insert into manages(admin_id , prize_name , movie_name)  values(1 , 'Oscar' , 'interstellar') ;
+insert into manages(admin_id , prize_name , movie_name)  values(2 , 'Oscar' , 'inception') ;
+insert into manages(admin_id , prize_name , movie_name)  values(3 , 'Oscar' , 'the joker') ;
+insert into manages(admin_id , prize_name , movie_name)  values(3 , 'Oscar' , 'barbie') ;
+insert into manages(admin_id , prize_name , movie_name)  values(4 , 'Oscar' , 'avengers infinity war');
+insert into manages(admin_id , prize_name , movie_name)  values(5 , 'Oscar' , 'mission impossible');
+insert into manages(admin_id , prize_name , movie_name)  values(6 , 'Oscar' , 'the fault in our stars');
+insert into manages(admin_id , prize_name , movie_name)  values(7 , 'Oscar' , 'the notebook');
+
+declare 
+votes NUMBER(2);
+winner VARCHAR2(50);
+begin
+select max(NUM_OF_VOTES)
+into votes
+from movie;
+select movie_name
+into winner
+from movie
+where num_of_votes = votes ;
+update PRIZE_ELECTIONS
+set winner_name = winner;
+end ;
