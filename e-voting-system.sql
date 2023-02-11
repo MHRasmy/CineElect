@@ -1,5 +1,5 @@
 --------------------------------------------------------
---  File created - Thursday-February-09-2023   
+--  File created - Wednesday-December-21-2022   
 --------------------------------------------------------
 --------------------------------------------------------
 --  DDL for Sequence AGE_SEQ
@@ -75,14 +75,6 @@
 	"WINNER_NAME" VARCHAR2(25 BYTE)
    ) ;
 --------------------------------------------------------
---  DDL for Table REGIONS
---------------------------------------------------------
-
-  CREATE TABLE "REGIONS" 
-   (	"REGION_ID" NUMBER, 
-	"REGION_NAME" VARCHAR2(25 BYTE)
-   ) ;
---------------------------------------------------------
 --  DDL for Table VOTER
 --------------------------------------------------------
 
@@ -100,20 +92,6 @@
 	"MOVIE_NAME" VARCHAR2(25 BYTE), 
 	"PRIZE_NAME" VARCHAR2(15 BYTE)
    ) ;
-
----------------------------------------------------
---   DATA FOR TABLE REGIONS
---   FILTER = none used
----------------------------------------------------
-REM INSERTING into REGIONS
-Insert into REGIONS (REGION_ID,REGION_NAME) values (1,'Europe');
-Insert into REGIONS (REGION_ID,REGION_NAME) values (2,'Americas');
-Insert into REGIONS (REGION_ID,REGION_NAME) values (3,'Asia');
-Insert into REGIONS (REGION_ID,REGION_NAME) values (4,'Middle East and Africa');
-
----------------------------------------------------
---   END DATA FOR TABLE REGIONS
----------------------------------------------------
 
 ---------------------------------------------------
 --   DATA FOR TABLE MOVIE_GENRE
@@ -150,7 +128,6 @@ Insert into PRIZE_ELECTIONS (PRIZE_NAME,START_DATE,END_DATE,WINNER_NAME) values 
 ---------------------------------------------------
 REM INSERTING into NOMINATED_FOR
 Insert into NOMINATED_FOR (MOVIE_NAME,PRIZE_NAME) values ('interstellar','Oscar');
-Insert into NOMINATED_FOR (MOVIE_NAME,PRIZE_NAME) values ('the joker','Oscar');
 Insert into NOMINATED_FOR (MOVIE_NAME,PRIZE_NAME) values ('inception','Oscar');
 Insert into NOMINATED_FOR (MOVIE_NAME,PRIZE_NAME) values ('avengers infinity war','Oscar');
 Insert into NOMINATED_FOR (MOVIE_NAME,PRIZE_NAME) values ('the fault in our stars','Oscar');
@@ -276,23 +253,40 @@ Insert into MANAGES (ADMIN_ID,PRIZE_NAME,MOVIE_NAME) values (7,'Oscar','the note
 
   ALTER TABLE "PRIZE_ELECTIONS" ADD PRIMARY KEY ("PRIZE_NAME") ENABLE;
 --------------------------------------------------------
---  Constraints for Table REGIONS
---------------------------------------------------------
-
-  ALTER TABLE "REGIONS" MODIFY ("REGION_ID" CONSTRAINT "REGION_ID_NN" NOT NULL ENABLE);
- 
-  ALTER TABLE "REGIONS" ADD CONSTRAINT "REG_ID_PK" PRIMARY KEY ("REGION_ID") ENABLE;
---------------------------------------------------------
 --  Constraints for Table VOTER
 --------------------------------------------------------
 
   ALTER TABLE "VOTER" ADD PRIMARY KEY ("VOTER_ID") ENABLE;
 
 --------------------------------------------------------
---  DDL for Index REG_ID_PK
+--  DDL for Index SYS_C0012278
 --------------------------------------------------------
 
-  CREATE UNIQUE INDEX "REG_ID_PK" ON "REGIONS" ("REGION_ID") 
+  CREATE UNIQUE INDEX "SYS_C0012278" ON "MOVIE" ("MOVIE_NAME") 
+  ;
+--------------------------------------------------------
+--  DDL for Index SYS_C0012283
+--------------------------------------------------------
+
+  CREATE UNIQUE INDEX "SYS_C0012283" ON "MOVIE_GENRE" ("MOVIE_NAME", "MOVIEGENRE") 
+  ;
+--------------------------------------------------------
+--  DDL for Index SYS_C0012282
+--------------------------------------------------------
+
+  CREATE UNIQUE INDEX "SYS_C0012282" ON "ORGANIZER" ("ADMIN_ID") 
+  ;
+--------------------------------------------------------
+--  DDL for Index SYS_C0012281
+--------------------------------------------------------
+
+  CREATE UNIQUE INDEX "SYS_C0012281" ON "PRIZE_ELECTIONS" ("PRIZE_NAME") 
+  ;
+--------------------------------------------------------
+--  DDL for Index SYS_C0012277
+--------------------------------------------------------
+
+  CREATE UNIQUE INDEX "SYS_C0012277" ON "VOTER" ("VOTER_ID") 
   ;
 --------------------------------------------------------
 --  Ref Constraints for Table MANAGES
@@ -330,7 +324,6 @@ Insert into MANAGES (ADMIN_ID,PRIZE_NAME,MOVIE_NAME) values (7,'Oscar','the note
   ALTER TABLE "PRIZE_ELECTIONS" ADD FOREIGN KEY ("WINNER_NAME")
 	  REFERENCES "MOVIE" ("MOVIE_NAME") ENABLE;
 
-
 --------------------------------------------------------
 --  Ref Constraints for Table VOTES_FOR
 --------------------------------------------------------
@@ -343,81 +336,7 @@ Insert into MANAGES (ADMIN_ID,PRIZE_NAME,MOVIE_NAME) values (7,'Oscar','the note
  
   ALTER TABLE "VOTES_FOR" ADD FOREIGN KEY ("PRIZE_NAME")
 	  REFERENCES "PRIZE_ELECTIONS" ("PRIZE_NAME") ENABLE;
---------------------------------------------------------
---  DDL for Trigger SECURE_EMPLOYEES
---------------------------------------------------------
 
-  CREATE OR REPLACE TRIGGER "SECURE_EMPLOYEES" 
-  BEFORE INSERT OR UPDATE OR DELETE ON employees
-BEGIN
-  secure_dml;
-END secure_employees;
-/
-ALTER TRIGGER "SECURE_EMPLOYEES" DISABLE;
---------------------------------------------------------
---  DDL for Trigger UPDATE_JOB_HISTORY
---------------------------------------------------------
-
-  CREATE OR REPLACE TRIGGER "UPDATE_JOB_HISTORY" 
-  AFTER UPDATE OF job_id, department_id ON employees
-  FOR EACH ROW
-BEGIN
-  add_job_history(:old.employee_id, :old.hire_date, sysdate,
-                  :old.job_id, :old.department_id);
-END;
-/
-ALTER TRIGGER "UPDATE_JOB_HISTORY" ENABLE;
---------------------------------------------------------
---  DDL for View EMP_DETAILS_VIEW
---------------------------------------------------------
-
-  CREATE OR REPLACE FORCE VIEW "EMP_DETAILS_VIEW" ("EMPLOYEE_ID", "JOB_ID", "MANAGER_ID", "DEPARTMENT_ID", "LOCATION_ID", "COUNTRY_ID", "FIRST_NAME", "LAST_NAME", "SALARY", "COMMISSION_PCT", "DEPARTMENT_NAME", "JOB_TITLE", "CITY", "STATE_PROVINCE", "COUNTRY_NAME", "REGION_NAME") AS 
-  SELECT
-  e.employee_id,
-  e.job_id,
-  e.manager_id,
-  e.department_id,
-  d.location_id,
-  l.country_id,
-  e.first_name,
-  e.last_name,
-  e.salary,
-  e.commission_pct,
-  d.department_name,
-  j.job_title,
-  l.city,
-  l.state_province,
-  c.country_name,
-  r.region_name
-FROM
-  employees e,
-  departments d,
-  jobs j,
-  locations l,
-  countries c,
-  regions r
-WHERE e.department_id = d.department_id
-  AND d.location_id = l.location_id
-  AND l.country_id = c.country_id
-  AND c.region_id = r.region_id
-  AND j.job_id = e.job_id
-WITH READ ONLY;
---------------------------------------------------------
---  DDL for Function CAL_EMP
---------------------------------------------------------
-
-  CREATE OR REPLACE FUNCTION "CAL_EMP" (department employees.DEPARTMENT_ID%TYPE) RETURN NUMBER
-is
-total NUMBER;
-begin
-select count(*)
-into total
-from employees
-where department_id = department;
-return total;
-end;
-
-/
 
 --------------------------------------------------------
 --  DDL for Procedure SECURE_DML
